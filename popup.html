@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Parameter Injector</title>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        <h1>URL Param Injector</h1>
+      </div>
+      <p class="header-sub">Append query parameters to matching URLs automatically.</p>
+    </header>
+
+    <!-- Rules List -->
+    <section class="rules-section" id="rules-section">
+      <div class="rules-header">
+        <span class="rules-count" id="rules-count">0 rules</span>
+        <button class="btn btn-add" id="btn-add" title="Add new rule">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Rule
+        </button>
+      </div>
+      <div class="rules-list" id="rules-list">
+        <!-- Rules rendered here -->
+      </div>
+      <div class="empty-state" id="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M12 8v8"/>
+          <path d="M8 12h8"/>
+        </svg>
+        <p>No rules configured yet.</p>
+        <p class="hint">Click <strong>Add Rule</strong> to get started.</p>
+      </div>
+    </section>
+
+    <!-- Add/Edit Form (Hidden by default) -->
+    <section class="form-section hidden" id="form-section">
+      <h2 class="form-title" id="form-title">Add Rule</h2>
+      <form id="rule-form" autocomplete="off">
+        <div class="form-group">
+          <label for="input-url">URL Pattern</label>
+          <input type="text" id="input-url" placeholder="e.g. example.com/api" required>
+          <span class="form-hint">Requests whose URL contains this string will be matched.</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="input-key">Parameter Name</label>
+            <input type="text" id="input-key" placeholder="e.g. api_key" required>
+          </div>
+          <div class="form-group">
+            <label for="input-value">Parameter Value</label>
+            <input type="text" id="input-value" placeholder="e.g. abc123">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" id="btn-cancel">Cancel</button>
+          <button type="submit" class="btn btn-save" id="btn-save">Save Rule</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Status Toast -->
+    <div class="toast hidden" id="toast"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
