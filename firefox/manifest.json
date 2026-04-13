@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
   "name": "URL Parameter Injector",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automatically append query parameters to matching URLs before the request is made.",
   "permissions": [
     "storage",
     "webRequest",
-    "declarativeNetRequest"    
+    "declarativeNetRequest"
   ],
   "host_permissions": ["<all_urls>"],
   "action": {
@@ -19,19 +19,13 @@
   "icons": {
     "1024": "icons/icon1024.png"
   },
-  "data_collection_permissions": {
-    "can_collect_telemetry": false,
-    "can_collect_content": false,
-    "can_collect_user_interaction": false,"required": [],
-  "optional": []
-  },
   "browser_specific_settings": {
-  "gecko": {
-    "id": "url-param-injector@example.com",
-    "strict_min_version": "140.0",
-    "data_collection_permissions": {
-      "required": ["none"]
+    "gecko": {
+      "id": "url-param-injector@example.com",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
-}
 }
