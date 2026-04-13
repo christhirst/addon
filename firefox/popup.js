@@ -50,33 +50,74 @@ function renderRules() {
   rules.forEach((rule, index) => {
     const card = document.createElement('div');
     card.className = `rule-card${rule.enabled ? '' : ' disabled'}`;
-    card.innerHTML = `
-      <div class="rule-card-top">
-        <span class="rule-url">${escapeHtml(rule.urlPattern)}</span>
-        <div class="rule-card-actions">
-          <label class="toggle" title="${rule.enabled ? 'Disable' : 'Enable'} rule">
-            <input type="checkbox" data-index="${index}" ${rule.enabled ? 'checked' : ''}>
-            <span class="toggle-slider"></span>
-          </label>
-          <button class="icon-btn" data-action="edit" data-index="${index}" title="Edit rule">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-          </button>
-          <button class="icon-btn danger" data-action="delete" data-index="${index}" title="Delete rule">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"/>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      <div class="rule-param">
-        <span class="arrow">→</span>
-        <span class="badge">${escapeHtml(rule.paramKey)}=${escapeHtml(rule.paramValue || '')}</span>
-      </div>
-    `;
+
+    // Top section with URL and actions
+    const topDiv = document.createElement('div');
+    topDiv.className = 'rule-card-top';
+
+    const urlSpan = document.createElement('span');
+    urlSpan.className = 'rule-url';
+    urlSpan.textContent = rule.urlPattern;
+
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'rule-card-actions';
+
+    // Toggle checkbox
+    const label = document.createElement('label');
+    label.className = 'toggle';
+    label.title = rule.enabled ? 'Disable rule' : 'Enable rule';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.dataset.index = index;
+    checkbox.checked = rule.enabled;
+
+    const slider = document.createElement('span');
+    slider.className = 'toggle-slider';
+
+    label.appendChild(checkbox);
+    label.appendChild(slider);
+
+    // Edit button with SVG
+    const editBtn = document.createElement('button');
+    editBtn.className = 'icon-btn';
+    editBtn.dataset.action = 'edit';
+    editBtn.dataset.index = index;
+    editBtn.title = 'Edit rule';
+    editBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+
+    // Delete button with SVG
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'icon-btn danger';
+    deleteBtn.dataset.action = 'delete';
+    deleteBtn.dataset.index = index;
+    deleteBtn.title = 'Delete rule';
+    deleteBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+
+    actionsDiv.appendChild(label);
+    actionsDiv.appendChild(editBtn);
+    actionsDiv.appendChild(deleteBtn);
+
+    topDiv.appendChild(urlSpan);
+    topDiv.appendChild(actionsDiv);
+
+    // Param section
+    const paramDiv = document.createElement('div');
+    paramDiv.className = 'rule-param';
+
+    const arrow = document.createElement('span');
+    arrow.className = 'arrow';
+    arrow.textContent = '→';
+
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = `${rule.paramKey}=${rule.paramValue || ''}`;
+
+    paramDiv.appendChild(arrow);
+    paramDiv.appendChild(badge);
+
+    card.appendChild(topDiv);
+    card.appendChild(paramDiv);
     rulesList.appendChild(card);
   });
 }
