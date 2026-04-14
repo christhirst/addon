@@ -58,13 +58,21 @@
           <input type="text" id="input-url" placeholder="e.g. example.com/api" required>
           <span class="form-hint">Requests whose URL contains this string will be matched.</span>
         </div>
+        <div class="form-group">
+          <label for="input-type">Injection Type</label>
+          <select id="input-type" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--bg-card); color: var(--text-main); margin-bottom: 1rem;">
+            <option value="parameter">Query Parameter</option>
+            <option value="header">HTTP Header</option>
+            <option value="saml_redirect">SAML Ghost Redirect</option>
+          </select>
+        </div>
         <div class="form-row">
           <div class="form-group">
-            <label for="input-key">Parameter Name</label>
+            <label for="input-key" id="label-key">Key</label>
             <input type="text" id="input-key" placeholder="e.g. api_key" required>
           </div>
-          <div class="form-group">
-            <label for="input-value">Parameter Value</label>
+          <div class="form-group" id="group-value">
+            <label for="input-value" id="label-value">Value</label>
             <input type="text" id="input-value" placeholder="e.g. abc123">
           </div>
         </div>

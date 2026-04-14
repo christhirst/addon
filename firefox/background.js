@@ -79,20 +79,82 @@ loadRules();
 browser.webRequest.onBeforeRequest.addListener(
   (details) => {
     const { url } = details;
-    const activeRules = rules.filter(r => r.enabled && r.urlPattern && r.paramKey);
+    // Exclude header rules
+    const activeRules = rules.filter(r => r.enabled && r.urlPattern && r.paramKey && r.type !== 'header');
 
     for (const rule of activeRules) {
       if (urlMatches(url, rule.urlPattern)) {
-        const newUrl = addParameterToUrl(url, rule.paramKey, rule.paramValue || '');
-        if (newUrl !== url) {
-          console.log(`[URL Param Injector] Redirecting ${url} → ${newUrl}`);
-          return { redirectUrl: newUrl };
+        if (!rule.type || rule.type === 'parameter') {
+          const newUrl = addParameterToUrl(url, rule.paramKey, rule.paramValue || '');
+          if (newUrl !== url) {
+            console.log(`[URL Param Injector] Redirecting ${url} → ${newUrl}`);
+            return { redirectUrl: newUrl };
+          }
+        } else if (rule.type === 'saml_redirect') {
+          try {
+            const urlObj = new URL(url);
+            const redirectTarget = rule.paramKey;
+            const newUrlObj = new URL(redirectTarget);
+            
+            // Prevent loop: check if we are already at the target path and host
+            if (urlObj.host === newUrlObj.host && urlObj.pathname === newUrlObj.pathname) {
+              continue; // Skip this rule
+            }
+            
+            // Parse preserved parameters from comma-separated string
+            const preservedParamsStr = rule.paramValue || '';
+            const paramsToPreserve = preservedParamsStr.split(',').map(p => p.trim()).filter(Boolean);
+            
+            // Preserve parameters
+            for (const param of paramsToPreserve) {
+              if (urlObj.searchParams.has(param)) {
+                newUrlObj.searchParams.set(param, urlObj.searchParams.get(param));
+              }
+            }
+            
+            const newUrlStr = newUrlObj.toString();
+            console.log(`[URL Param Injector] SAML Ghost Redirect ${url} → ${newUrlStr}`);
+            return { redirectUrl: newUrlStr };
+          } catch (err) {
+            console.error(`[URL Param Injector] SAML Redirect failed for ${url}:`, err);
+          }
         }
       }
     }
   },
   { urls: ['<all_urls>'] },
   ['blocking']
+);
+
+// Listen for webRequest to inject headers
+browser.webRequest.onBeforeSendHeaders.addListener(
+  (details) => {
+    const { url, requestHeaders } = details;
+    const activeRules = rules.filter(r => r.enabled && r.urlPattern && r.paramKey && r.type === 'header');
+
+    let headersModified = false;
+    for (const rule of activeRules) {
+      if (urlMatches(url, rule.urlPattern)) {
+        // Check if header already exists
+        const headerIndex = requestHeaders.findIndex(
+          (h) => h.name.toLowerCase() === rule.paramKey.toLowerCase()
+        );
+        if (headerIndex >= 0) {
+          requestHeaders[headerIndex].value = rule.paramValue || '';
+        } else {
+          requestHeaders.push({ name: rule.paramKey, value: rule.paramValue || '' });
+        }
+        headersModified = true;
+        console.log(`[URL Param Injector] Injected Header ${rule.paramKey}=${rule.paramValue || ''} for ${url}`);
+      }
+    }
+    
+    if (headersModified) {
+      return { requestHeaders };
+    }
+  },
+  { urls: ['<all_urls>'] },
+  ['blocking', 'requestHeaders']
 );
 
 // Listen for messages from popup to reload rules

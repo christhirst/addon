@@ -9,8 +9,12 @@ const formSection = $('#form-section');
 const formTitle = $('#form-title');
 const ruleForm = $('#rule-form');
 const inputUrl = $('#input-url');
+const inputType = $('#input-type');
 const inputKey = $('#input-key');
 const inputValue = $('#input-value');
+const labelKey = $('#label-key');
+const groupValue = $('#group-value');
+const labelValue = $('#label-value');
 const btnAdd = $('#btn-add');
 const btnCancel = $('#btn-cancel');
 const rulesList = $('#rules-list');
@@ -109,11 +113,29 @@ function renderRules() {
     arrow.className = 'arrow';
     arrow.textContent = '→';
 
+    const typeBadge = document.createElement('span');
+    typeBadge.className = 'badge';
+    typeBadge.style.marginRight = '8px';
+    if (rule.type === 'header') {
+      typeBadge.textContent = 'HDR';
+      typeBadge.style.backgroundColor = '#8b5cf6';
+      typeBadge.style.color = '#fff';
+      typeBadge.style.borderColor = '#7c3aed';
+    } else if (rule.type === 'saml_redirect') {
+      typeBadge.textContent = 'SAML';
+      typeBadge.style.backgroundColor = '#f97316';
+      typeBadge.style.color = '#fff';
+      typeBadge.style.borderColor = '#ea580c';
+    } else {
+      typeBadge.textContent = 'PRM';
+    }
+
     const badge = document.createElement('span');
     badge.className = 'badge';
     badge.textContent = `${rule.paramKey}=${rule.paramValue || ''}`;
 
     paramDiv.appendChild(arrow);
+    paramDiv.appendChild(typeBadge);
     paramDiv.appendChild(badge);
 
     card.appendChild(topDiv);
@@ -129,7 +151,26 @@ btnAdd.addEventListener('click', () => {
   editingIndex = -1;
   formTitle.textContent = 'Add Rule';
   ruleForm.reset();
+  inputType.dispatchEvent(new Event('change'));
   showForm();
+});
+
+// Type change listener
+inputType.addEventListener('change', () => {
+  if (inputType.value === 'saml_redirect') {
+    labelKey.textContent = 'Redirect URL';
+    inputKey.placeholder = 'e.g. https://target.com/auth';
+    labelValue.textContent = 'Preserved Parameters';
+    inputValue.placeholder = 'e.g. SAMLRequest,RelayState';
+    groupValue.classList.remove('hidden');
+    inputValue.required = false;
+  } else {
+    labelKey.textContent = 'Key';
+    inputKey.placeholder = 'e.g. api_key';
+    labelValue.textContent = 'Value';
+    inputValue.placeholder = 'e.g. abc123';
+    groupValue.classList.remove('hidden');
+  }
 });
 
 // Cancel button
@@ -142,6 +183,7 @@ ruleForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const urlPattern = inputUrl.value.trim();
+  const type = inputType.value;
   let paramKey = inputKey.value.trim();
   let paramValue = inputValue.value.trim();
 
@@ -156,6 +198,7 @@ ruleForm.addEventListener('submit', async (e) => {
 
   const ruleData = {
     urlPattern,
+    type,
     paramKey,
     paramValue,
     enabled: true,
@@ -188,6 +231,8 @@ rulesList.addEventListener('click', async (e) => {
     editingIndex = index;
     const rule = rules[index];
     inputUrl.value = rule.urlPattern;
+    inputType.value = rule.type || 'parameter';
+    inputType.dispatchEvent(new Event('change'));
     inputKey.value = rule.paramKey;
     inputValue.value = rule.paramValue || '';
     formTitle.textContent = 'Edit Rule';
