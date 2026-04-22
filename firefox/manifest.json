@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "URL Parameter Injector",
-  "version": "1.1.0",
+  "version": "1.1.6",
   "description": "Inject URL parameters, headers, and auto-redirect SAML identity broker pages to the correct IDP.",
   "permissions": [
     "storage",
@@ -21,6 +21,13 @@
       "background.js"
     ]
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "icons": {
     "1024": "icons/icon1024.png"
   },

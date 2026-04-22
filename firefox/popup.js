@@ -19,6 +19,7 @@ const labelKey = $('#label-key');
 const groupValue = $('#group-value');
 const labelValue = $('#label-value');
 const samlHelp = $('#saml-help');
+const autoClickHelp = $('#auto-click-help');
 const btnAdd = $('#btn-add');
 const btnCancel = $('#btn-cancel');
 const btnExport = $('#btn-export');
@@ -71,7 +72,8 @@ function renderRules() {
     const card = document.createElement('div');
     const isSaml = rule.type === 'saml_redirect';
     const isHeader = rule.type === 'header';
-    card.className = `rule-card${rule.enabled ? '' : ' disabled'}${isSaml ? ' saml' : ''}`;
+    const isAutoClick = rule.type === 'auto_click';
+    card.className = `rule-card${rule.enabled ? '' : ' disabled'}${isSaml ? ' saml' : ''}${isAutoClick ? ' auto-click' : ''}`;
 
     // Top section with URL and actions
     const topDiv = document.createElement('div');
@@ -151,6 +153,9 @@ function renderRules() {
     } else if (isSaml) {
       typeBadge.textContent = 'SAML';
       typeBadge.classList.add('badge-saml');
+    } else if (isAutoClick) {
+      typeBadge.textContent = 'CLK';
+      typeBadge.classList.add('badge-autoclick');
     } else {
       typeBadge.textContent = 'PRM';
       typeBadge.classList.add('badge-param');
@@ -166,6 +171,9 @@ function renderRules() {
       } catch {
         valueBadge.textContent = rule.paramKey;
       }
+      valueBadge.title = rule.paramKey;
+    } else if (isAutoClick) {
+      valueBadge.textContent = rule.paramKey;
       valueBadge.title = rule.paramKey;
     } else {
       valueBadge.textContent = `${rule.paramKey}=${rule.paramValue || ''}`;
@@ -218,6 +226,7 @@ inputType.addEventListener('change', () => {
     groupValue.classList.remove('hidden');
     inputValue.required = false;
     samlHelp.classList.remove('hidden');
+    autoClickHelp.classList.add('hidden');
   } else if (type === 'header') {
     labelUrl.textContent = 'URL Pattern';
     inputUrl.placeholder = 'e.g. api.example.com';
@@ -229,6 +238,17 @@ inputType.addEventListener('change', () => {
     groupValue.classList.remove('hidden');
     inputValue.required = false;
     samlHelp.classList.add('hidden');
+    autoClickHelp.classList.add('hidden');
+  } else if (type === 'auto_click') {
+    labelUrl.textContent = 'Page URL Pattern';
+    inputUrl.placeholder = 'e.g. identity.company.com/login';
+    hintUrl.textContent = 'The page where the element should be clicked.';
+    labelKey.textContent = 'CSS Selector';
+    inputKey.placeholder = 'e.g. #submit-btn or .login-button';
+    groupValue.classList.add('hidden');
+    inputValue.required = false;
+    samlHelp.classList.add('hidden');
+    autoClickHelp.classList.remove('hidden');
   } else {
     // parameter
     labelUrl.textContent = 'URL Pattern';
@@ -241,6 +261,7 @@ inputType.addEventListener('change', () => {
     groupValue.classList.remove('hidden');
     inputValue.required = false;
     samlHelp.classList.add('hidden');
+    autoClickHelp.classList.add('hidden');
   }
 });
 
@@ -477,6 +498,9 @@ function renderActivityLog(log) {
     } else if (entry.type === 'saml_redirect_error') {
       typeSpan.textContent = 'ERR';
       typeSpan.classList.add('activity-type-error');
+    } else if (entry.type === 'auto_click') {
+      typeSpan.textContent = 'CLK';
+      typeSpan.classList.add('activity-type-autoclick');
     } else {
       typeSpan.textContent = 'PRM';
       typeSpan.classList.add('activity-type-param');

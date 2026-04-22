@@ -311,6 +311,11 @@ body::-webkit-scrollbar-thumb {
   color: var(--saml-accent) !important;
 }
 
+.badge-autoclick {
+  background: rgba(32, 201, 151, 0.2) !important;
+  color: #20c997 !important;
+}
+
 .type-badge {
   font-weight: 700 !important;
   font-size: 10px !important;
@@ -763,6 +768,11 @@ body::-webkit-scrollbar-thumb {
 .activity-type-error {
   background: rgba(255, 107, 107, 0.2);
   color: var(--danger);
+}
+
+.activity-type-autoclick {
+  background: rgba(32, 201, 151, 0.2);
+  color: #20c997;
 }
 
 .activity-details {

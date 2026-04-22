@@ -265,4 +265,10 @@ browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     sendResponse({ ok: true });
     return false;
   }
+  
+  if (message.type === 'LOG_ACTIVITY') {
+    logActivity(message.entry);
+    sendResponse({ ok: true });
+    return false;
+  }
 });
